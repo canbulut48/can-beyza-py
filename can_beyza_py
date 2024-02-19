@@ -1,0 +1,76 @@
+class Library:
+    def __init__(self):
+        # Open books.txt file in append mode
+        self.file = open("books.txt", "a+")
+
+    def __del__(self):
+        # Close the file when object is deleted
+        self.file.close()
+
+    def list_books(self):
+        # Print all books in the library
+        self.file.seek(0)  # Move cursor to the beginning of the file
+        books = self.file.readlines()  # Read all lines from the file
+        if not books:
+            print("No books available.")
+            return
+        print("Books in the Library:")
+        print("Title\tAuthor\t\tRelease Year\tPages")
+        print("-" * 50)
+        for book in books:
+            book_info = book.strip().split(',')  # Split book info by comma
+            title, author, release_year, num_pages = book_info
+            print(f"{title}\t{author}\t\t{release_year}\t\t{num_pages}")
+
+    def add_book(self):
+        # Add a new book to the library
+        title = input("Enter the title of the book: ")
+        author = input("Enter the author of the book: ")
+        release_year = input("Enter the release year of the book: ")
+        num_pages = input("Enter the number of pages: ")
+        book_info = f"{title},{author},{release_year},{num_pages}\n"  # Create book info string
+        self.file.write(book_info)  # Write book info to the file
+        print("Book added successfully.")
+
+    def remove_book(self):
+        # Remove a book from the library
+        title = input("Enter the title of the book to remove: ")
+        self.file.seek(0)  # Move cursor to the beginning of the file
+        books = self.file.readlines()  # Read all lines from the file
+        updated_books = []
+        removed = False
+        for book in books:
+            if title not in book:
+                updated_books.append(book)
+            else:
+                removed = True
+        if removed:
+            self.file.seek(0)  # Move cursor to the beginning of the file
+            self.file.truncate()  # Clear the file content
+            self.file.writelines(updated_books)  # Write updated books to the file
+            print(f"Book '{title}' removed successfully.")
+        else:
+            print(f"Book '{title}' not found.")
+
+# Creating Library object
+lib = Library()
+
+# Menu
+while True:
+    print("\n*** MENU ***")
+    print("1) List Books")
+    print("2) Add Book")
+    print("3) Remove Book")
+    print("4) Exit")
+    choice = input("Enter your choice: ")
+
+    if choice == '1':
+        lib.list_books()
+    elif choice == '2':
+        lib.add_book()
+    elif choice == '3':
+        lib.remove_book()
+    elif choice == '4':
+        break
+    else:
+        print("Invalid choice. Please enter a valid option.")
